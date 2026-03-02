@@ -1,111 +1,153 @@
 # 🥃 Home Assistant Bar Manager (AI Powered)
 
-Ce projet transforme votre instance Home Assistant en un gestionnaire de bar intelligent.  
-Il utilise l’IA pour identifier vos spiritueux, générer des fiches techniques complètes et gérer votre inventaire de manière dynamique, sans aucun module complémentaire tiers.
+Un gestionnaire de bar intelligent pour Home Assistant.
 
-Ce projet est inspiré du travail remarquable d’**Aldoushx** et de son gestionnaire de cave IA.  
-Il ne s’agit pas d’un fork, mais d’une adaptation conceptuelle appliquée à l’univers des spiritueux et des cocktails.
+Ce projet transforme votre instance Home Assistant en un véritable **assistant barman piloté par IA**.  
+Il permet d’identifier vos spiritueux, générer des fiches techniques complètes, gérer votre inventaire et proposer des cocktails intelligents.
+
+> Projet inspiré du travail remarquable d’**Aldoushx** (Home Assistant Wine Cellar Manager).  
+> Il ne s’agit pas d’un fork, mais d’une adaptation conceptuelle dédiée aux spiritueux et aux cocktails.
 
 ---
 
 ## ✨ Fonctionnalités
 
-* **Identification par IA** : À partir du nom et du type, le système interroge Google Gemini. L’IA agit comme un expert en spiritueux en croisant des sources spécialisées (Difford’s Guide, Liquor.com, Whisky Advocate, etc.).
+### 🧠 Identification par IA
+À partir du nom et du type, le système interroge **Google Gemini**.
 
-* **Fiches techniques exhaustives** :
-    * **Identité** : Nom exact, Type (Rhum, Gin, Whisky…), Origine, Distillerie, Année.
-    * **Caractéristiques** : ABV, Volume, Prix moyen estimé.
-    * **Analyse** : Profil aromatique structuré.
-    * **Cocktailabilité** : Corps cocktail (léger / moyen / puissant) et suggestions adaptées.
-
-* **Gestion de Stock** :
-    * Ajout en un clic depuis la recherche
-    * Boutons +1 / -1
-    * Suppression simplifiée
-    * Gestion intelligente des doublons (#2, #3…)
-    * Distinction Maison / Industriel
-
-* **Statistiques** :
-    * Nombre total de bouteilles
-    * Valorisation estimée du bar
+L’IA agit comme un expert en spiritueux en croisant des sources spécialisées :
+- Difford’s Guide
+- Liquor.com
+- Whisky Advocate
+- Fiches distilleries
 
 ---
 
-## UPDATE 1 : Mode Bouteille Maison
+### 📋 Fiches techniques complètes
 
-Ajout d’un module permettant de créer ses propres spiritueux :
+**Identité**
+- Nom exact
+- Type (Rhum, Gin, Whisky…)
+- Origine
+- Distillerie
+- Année
 
-* Calcul ABV estimé
-* Calcul coût réel (base + ingrédients)
-* Prix conseillé automatique
-* Calcul marge
-* Coût au litre
+**Caractéristiques**
+- ABV
+- Volume
+- Prix moyen estimé
 
----
-
-## UPDATE 2 : Accord du Barman (IA)
-
-Un module intelligent propose un cocktail en fonction :
-
-* De la bouteille sélectionnée (optionnel)
-* Des ingrédients disponibles
-* De l’occasion / envie
-
-La réponse inclut :
-
-* Nom du cocktail
-* Style
-* Raison du choix
-* Ingrédients
-* Recette
-* Verre conseillé
-* Garnish
-* Niveau
-* Variantes
+**Analyse**
+- Profil aromatique structuré
+- Corps cocktail (léger / moyen / puissant)
+- Suggestions adaptées
 
 ---
 
-## UPDATE 3 : Analyse du Stock & Cohérence
+### 📊 Indicateurs de fiabilité
 
-Un module compare :
-
-* Inventaire théorique
-* Bouteilles placées dans le plan
-* Suroccupation
-* Bouteilles non placées
-* Inconnues dans le plan
+- ✅ Très haute
+- 🟢 Haute
+- 🟡 Moyenne
+- 🟠 Faible
+- 🔴 Très incertain
 
 ---
 
-## UPDATE 4 : Visualisation & Rangement du Bar (Frontend)
+### 📦 Gestion intelligente du stock
 
-Une interface HTML permet :
-
-* Visualisation dynamique des bouteilles
-* Placement manuel (E1-1, E1-2…)
-* Mode automatique (Auto-fill)
-* Vidage complet
-* Comparaison en direct inventaire / plan
-
----
-
-## 🛠 Prérequis
-
-1. **Clé API Google Gemini**  
-   Version gratuite ou payante, à créer sur Google AI Studio.
-
-2. **Intégration Google Generative AI**  
-   Intégration native Home Assistant.  
-   Nom recommandé de l’action : `google_ai_task`.
-
-3. **Logs système activés**  
-   L’intégration `system_log` doit être active pour la remontée des erreurs IA.
-
-4. **python_scripts activé** dans `configuration.yaml`.
+- Ajout en un clic depuis la recherche
+- Boutons +1 / -1
+- Suppression simplifiée
+- Gestion intelligente des doublons (#2, #3…)
+- Distinction Maison / Industriel
+- Valorisation estimée du bar
+- Nombre total de bouteilles
 
 ---
 
-## 🚀 Installation
+# 🚀 Modules avancés
+
+---
+
+## 🏠 Mode Bouteille Maison
+
+Création de spiritueux personnalisés :
+
+- Calcul ABV estimé
+- Calcul coût réel (base + ingrédients)
+- Prix conseillé automatique
+- Calcul marge
+- Coût au litre
+
+---
+
+## 🍸 Accord du Barman (IA)
+
+Proposition intelligente de cocktail selon :
+
+- Bouteille sélectionnée (optionnel)
+- Ingrédients disponibles
+- Occasion / envie
+
+Réponse structurée en JSON strict :
+
+- Nom du cocktail
+- Style
+- Raison
+- Ingrédients
+- Recette
+- Verre
+- Garnish
+- Niveau
+- Variantes
+
+---
+
+## 📈 Analyse du Stock & Cohérence
+
+Comparaison automatique entre :
+
+- Inventaire théorique
+- Plan de rangement
+- Bouteilles non placées
+- Suroccupation
+- Inconnues dans le plan
+
+---
+
+## 🗺️ Visualisation & Rangement du Bar (Frontend)
+
+Interface HTML dynamique :
+
+- Visualisation graphique des bouteilles
+- Placement manuel (E1-1, E1-2…)
+- Mode automatique (Auto-fill)
+- Vidage complet
+- Synchronisation inventaire / plan
+- Génération HTML automatique
+
+---
+
+# 🛠 Prérequis
+
+1. **Clé API Google Gemini**
+   - À créer sur Google AI Studio
+
+2. **Intégration Google Generative AI**
+   - Intégration native Home Assistant
+   - Nom recommandé de l’action :
+     ```
+     google_ai_task
+     ```
+
+3. **system_log activé**
+
+4. **python_scripts activé** dans `configuration.yaml`
+
+---
+
+# 🚀 Installation
 
 ### 1. Organisation des fichiers
 
@@ -162,6 +204,16 @@ Fichiers concernés :
 * `bar_empty.py`
 * 
 Pour créer un jeton longue durée, cliquez sur votre nom en bas du menu à gauche dans HA => onglet Securité => (en bas) Jetons d'accès longue durée / créer un jeton.
+
+---
+
+## 📖 Utilisation
+
+1. **Saisie** : Tapez le nom, la couleur et l'année dans l'interface du dashboard. Cliquez sur **Rechercher le vin**.
+2. **Analyse** : Pendant que l'IA travaille, vous pouvez observer que la demande est bien prise en compte avec un indicateur d'opération. La requête prend environ 10s.
+3. **Stockage** : Quand la recherche est terminée, le vin trouvé est décrit sommairement. Si sa description correspond à l'attendu, cliquez sur **Ajouter le vin à la cave** pour basculer le vin de la recherche vers votre inventaire permanent.
+4. **Gestion** : Déployez "Afficher la gestion de la cave" pour ajuster vos stocks, à l'aide de la liste déroulante et des boutons associés.
+5. **Conseils du sommelier** : Entrez votre repas dans le champs texte et lancez la recherche IA. La réponse arrivera sous 15s. Idem pour les conseils d'achats et les opportunités, les champs sont suffisamment explicites !
 
 ---
 
