@@ -112,6 +112,7 @@ Une interface HTML permet :
 Créer les dossiers suivants dans `/config/` :
 /config/packages/
 /config/python_scripts/
+
 ---
 
 ### 2. Configuration du `configuration.yaml`
@@ -124,7 +125,10 @@ recorder:
   purge_keep_days: 7
   exclude:
     event_types:
-      - system_log_event```
+      - system_log_event
+
+
+
 
 Redémarrer Home Assistant après modification.
 
