@@ -124,7 +124,8 @@ recorder:
   purge_keep_days: 7
   exclude:
     event_types:
-      - system_log_event
+      - system_log_event```
+
 Redémarrer Home Assistant après modification.
 
 ### 3. Emplacement des fichiers
