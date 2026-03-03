@@ -44,16 +44,6 @@ L’IA agit comme un expert en spiritueux en croisant des sources spécialisées
 
 ---
 
-### 📊 Indicateurs de fiabilité
-
-- ✅ Très haute
-- 🟢 Haute
-- 🟡 Moyenne
-- 🟠 Faible
-- 🔴 Très incertain
-
----
-
 ### 📦 Gestion intelligente du stock
 
 - Ajout en un clic depuis la recherche
