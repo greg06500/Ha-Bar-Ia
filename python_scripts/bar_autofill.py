@@ -5,7 +5,7 @@ import urllib.request
 import subprocess
 import os
 
-TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIxMWVmNWIzODA5NzA0MmY2YjJiODQ4NjQzYzNjYTE1MiIsImlhdCI6MTc3MTUxMDU3NSwiZXhwIjoyMDg2ODcwNTc1fQ.C1qMzSBVraYElh_2UFu58tqKUwBGP2QpE_aGFaV6TGE"
+TOKEN = "MON_TOKEN"
 URL_BASE = "http://localhost:8123/api/states/"
 PATH_PLAN = "/config/bar_plan.json"
 GEN_HTML = "/config/generate_bar_plan.py"
