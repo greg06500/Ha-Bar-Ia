@@ -5,7 +5,6 @@ from pathlib import Path
 from datetime import datetime
 
 CONFIG_DIR = Path('/config')
-INV_PATH = CONFIG_DIR / 'bar_inventory.json'
 PLAN_PATH = CONFIG_DIR / 'bar_plan.json'
 
 DEFAULT_PLAN = {
