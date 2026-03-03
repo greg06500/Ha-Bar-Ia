@@ -7,7 +7,7 @@ import re
 # ---------------------------
 # CONFIGURATION (À ADAPTER)
 # ---------------------------
-TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIxMWVmNWIzODA5NzA0MmY2YjJiODQ4NjQzYzNjYTE1MiIsImlhdCI6MTc3MTUxMDU3NSwiZXhwIjoyMDg2ODcwNTc1fQ.C1qMzSBVraYElh_2UFu58tqKUwBGP2QpE_aGFaV6TGE"
+TOKEN = "MON_TOKEN"
 URL_INV = "http://127.0.0.1:8123/api/states/sensor.bar_supersensor"
 PATH_PLAN = "/config/bar_plan.json"
 
