@@ -8,7 +8,7 @@ import re
 import urllib.request
 
 HA_URL_BASE = "http://localhost:8123/api/states/"
-HA_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIxMWVmNWIzODA5NzA0MmY2YjJiODQ4NjQzYzNjYTE1MiIsImlhdCI6MTc3MTUxMDU3NSwiZXhwIjoyMDg2ODcwNTc1fQ.C1qMzSBVraYElh_2UFu58tqKUwBGP2QpE_aGFaV6TGE"
+TOKEN = "MON_TOKEN"
 
 ENTITY_SUPERSENSOR = "sensor.bar_supersensor"
 ATTR_INV = "spiritueux"
