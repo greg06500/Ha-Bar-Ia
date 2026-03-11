@@ -162,7 +162,90 @@ recorder:
 
 Redémarrer Home Assistant après modification.
 
-### 3. Emplacement des fichiers
+### 3. Installation de Config Template Card via HACS
+
+Cette carte est nécessaire pour afficher automatiquement l’URL mise à jour du plan dans une carte iframe, sans rester bloqué sur une ancienne version en cache.
+
+Étapes
+	1.	Ouvrir HACS
+	2.	Aller dans Frontend
+	3.	Rechercher Config Template Card
+	4.	Installer Config Template Card
+	5.	Redémarrer Home Assistant
+	6.	Vider le cache du navigateur ou faire un rechargement complet de l’interface
+
+Vérification de la ressource
+Normalement, HACS ajoute la ressource automatiquement.
+Si ce n’est pas le cas, ajoutez-la manuellement dans :
+
+Paramètres > Tableaux de bord > Ressources
+
+Avec :
+``` 
+URL: /hacsfiles/config-template-card/config-template-card.js
+Type: module
+``` 
+
+### 4. Carte Lovelace pour afficher le plan dynamiquement
+
+Utilisez cette carte pour afficher le plan du bar avec une URL versionnée automatiquement :
+``` 
+type: custom:config-template-card
+entities:
+  - input_text.bar_plan_version
+card:
+  type: iframe
+  url: ${"/local/bar_plan.html?v=" + states['input_text.bar_plan_version'].state}
+  aspect_ratio: 110%
+``` 
+Cette carte lit la valeur de input_text.bar_plan_version et recharge toujours la bonne version du fichier HTML généré.
+
+### 5. Variante responsive mobile / tablette / ordinateur
+
+Si vous voulez un meilleur affichage selon l’écran, utilisez cette version :
+``` 
+type: vertical-stack
+cards:
+  - type: conditional
+    conditions:
+      - condition: screen
+        media_query: "(max-width: 767px)"
+    card:
+      type: custom:config-template-card
+      entities:
+        - input_text.bar_plan_version
+      card:
+        type: iframe
+        url: ${"/local/bar_plan.html?v=" + states['input_text.bar_plan_version'].state}
+        aspect_ratio: 185%
+
+  - type: conditional
+    conditions:
+      - condition: screen
+        media_query: "(min-width: 768px) and (max-width: 1024px)"
+    card:
+      type: custom:config-template-card
+      entities:
+        - input_text.bar_plan_version
+      card:
+        type: iframe
+        url: ${"/local/bar_plan.html?v=" + states['input_text.bar_plan_version'].state}
+        aspect_ratio: 130%
+
+  - type: conditional
+    conditions:
+      - condition: screen
+        media_query: "(min-width: 1025px)"
+    card:
+      type: custom:config-template-card
+      entities:
+        - input_text.bar_plan_version
+      card:
+        type: iframe
+        url: ${"/local/bar_plan.html?v=" + states['input_text.bar_plan_version'].state}
+        aspect_ratio: 95%
+``` 
+### 6. Emplacement des fichiers
 | Fichier | Emplacement | Rôle |
 | :--- | :--- | :--- |
 | `bar_plan.json` | `/config/` | Base de données des emplacements |
