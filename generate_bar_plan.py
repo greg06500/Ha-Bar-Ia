@@ -15,7 +15,7 @@ from string import Template
 # Home Assistant API
 # -----------------------------
 HA_URL_BASE = "http://localhost:8123/api/states/"
-HA_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIxMWVmNWIzODA5NzA0MmY2YjJiODQ4NjQzYzNjYTE1MiIsImlhdCI6MTc3MTUxMDU3NSwiZXhwIjoyMDg2ODcwNTc1fQ.C1qMzSBVraYElh_2UFu58tqKUwBGP2QpE_aGFaV6TGE"
+TOKEN = "MON_TOKEN"
 
 ENTITY_SHELVES = "input_number.bar_nb_etageres"
 ENTITY_COLS    = "input_number.bar_nb_colonnes"
@@ -118,7 +118,27 @@ def ha_get_state(entity_id: str):
     except Exception as e:
         print(f"[HA API] erreur {entity_id}: {e}")
         return None
+def ha_set_input_text(entity_id: str, value: str):
+    url = "http://localhost:8123/api/services/input_text/set_value"
+    payload = {
+        "entity_id": entity_id,
+        "value": value
+    }
 
+    req = urllib.request.Request(
+        url,
+        data=json.dumps(payload).encode("utf-8"),
+        method="POST"
+    )
+    req.add_header("Authorization", f"Bearer {HA_TOKEN}")
+    req.add_header("Content-Type", "application/json")
+
+    try:
+        with urllib.request.urlopen(req, timeout=5) as r:
+            return json.loads(r.read().decode("utf-8"))
+    except Exception as e:
+        print(f"[HA API] erreur set input_text {entity_id}: {e}")
+        return None
 
 def ha_get_int(entity_id: str, default: int) -> int:
     data = ha_get_state(entity_id)
@@ -751,13 +771,25 @@ HTML_TEMPLATE = Template(r"""<!doctype html>
   @media (max-width: 520px) { .tip-thirds { grid-template-columns: 1fr; } }
 </style>
 
-  <script>
-    function refreshBar() {
-      const url = new URL(window.location.href);
-      url.searchParams.set('t', Date.now());
+<script>
+  (function () {
+    const nav = performance.getEntriesByType('navigation')[0];
+    const isReload = nav && (nav.type === 'reload' || nav.type === 'back_forward');
+
+    const url = new URL(window.location.href);
+
+    if (!url.searchParams.get('v') || isReload) {
+      url.searchParams.set('v', Date.now().toString());
       window.location.replace(url.toString());
     }
-  </script>
+  })();
+
+  function refreshBar() {
+    const url = new URL(window.location.href);
+    url.searchParams.set('v', Date.now().toString());
+    window.location.replace(url.toString());
+  }
+</script>
 </head>
 
 <body>
@@ -934,20 +966,31 @@ def main():
 
             spirit_id = None
             legacy_text = None
-
+            
+            # nouveau format
             if isinstance(entry, dict):
-                spirit_id = entry.get("id")
-                legacy_text = entry.get("label")
+                spirit_id = str(entry.get("id", "")).strip()
+            
+                if not spirit_id:
+                    legacy_text = str(entry.get("label", "")).strip()
+            
+            # ancien format
             elif isinstance(entry, str):
-                if entry in inv:
-                    spirit_id = entry
+                val = entry.strip()
+            
+                if val.lower() in ("", "none"):
+                    spirit_id = None
+                    legacy_text = None
+            
+                elif val in inv:
+                    spirit_id = val
+            
                 else:
-                    # tente conversion label -> id (comme ton Jinja)
-                    sid = resolve_spirit_id_from_label(inv, entry)
+                    sid = resolve_spirit_id_from_label(inv, val)
                     if sid:
                         spirit_id = sid
                     else:
-                        legacy_text = entry.strip()
+                        legacy_text = val
 
             # legacy texte
             if legacy_text and legacy_text.lower() != "none":
@@ -1058,9 +1101,11 @@ def main():
     import time
     version = str(int(time.time()))
     OUT_HTML.write_text(html, encoding="utf-8")
+    ha_set_input_text("input_text.bar_plan_version", version)
     
     print(f"[OK] HTML écrit: {OUT_HTML}?v={version} ({shelves}x{cols})")
 
 
 if __name__ == "__main__":
     main()
+    

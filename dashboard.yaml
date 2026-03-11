@@ -43,18 +43,17 @@ views:
             content: >-
               {% set err_msg = states('input_text.bar_derniere_erreur_ia') %}
 
-              {# --- Payload (safe) --- #} {% set payload_raw =
+              {% set payload_raw =
               state_attr('sensor.bar_spiritueux_recherche','payload') |
               default({}, true) %} {% set p = payload_raw | from_json if
               payload_raw is string and payload_raw|trim not in ['', 'unknown',
               'none'] else payload_raw %} {% set p = p if p is mapping else {}
               %}
 
-              {# --- Extraction sécurisée (comme Cave) --- #} {% set nom_data =
-              p.nom if p.nom is defined else {"valeur":"En attente"} %} {% set
-              nom_data = nom_data | from_json if nom_data is string else
-              nom_data %} {% set nom_r = nom_data.valeur | default('En attente')
-              %}
+              {% set nom_data = p.nom if p.nom is defined else {"valeur":"En
+              attente"} %} {% set nom_data = nom_data | from_json if nom_data is
+              string else nom_data %} {% set nom_r = nom_data.valeur |
+              default('En attente') %}
 
               {% set type_data = p.type if p.type is defined else {"valeur":"-"}
               %} {% set type_data = type_data | from_json if type_data is string
@@ -89,15 +88,13 @@ views:
               {% set est_maison = is_state('input_boolean.bar_est_maison','on')
               %}
 
-              {# --- Inventaire Bar (safe) --- #} {% set raw_inv =
-              state_attr('sensor.bar_supersensor', 'spiritueux') | default({},
-              true) %} {% set inv = raw_inv if raw_inv is mapping else (raw_inv
-              | from_json if raw_inv is string and raw_inv|trim not in ['',
-              'unknown', 'none'] else {}) %} {% set inv = inv if inv is mapping
-              else {} %}
+              {% set raw_inv = state_attr('sensor.bar_supersensor',
+              'spiritueux') | default({}, true) %} {% set inv = raw_inv if
+              raw_inv is mapping else (raw_inv | from_json if raw_inv is string
+              and raw_inv|trim not in ['', 'unknown', 'none'] else {}) %} {% set
+              inv = inv if inv is mapping else {} %}
 
-              {# --- 1) Gestion erreurs / états --- #} {% if
-              is_state('input_boolean.bar_ia_erreur', 'on') %}
+              {% if is_state('input_boolean.bar_ia_erreur', 'on') %}
                 {% if '429' in err_msg %}
                   ## <font color="#e74c3c">❌ Quota IA dépassé (429)</font>
                   Attends un peu avant de réessayer.
@@ -108,18 +105,13 @@ views:
                   ## <font color="#e74c3c">❌ Erreur IA</font>
                   {{ err_msg if err_msg|trim != '' else "Réessaie plus tard." }}
                 {% endif %}
-
               {% elif is_state('input_boolean.bar_ia_en_cours', 'on') %}
                 ## <font color="#3498db">🔄 Recherche IA en cours...</font>
                 Le barman analyse ta demande.
-
               {% elif nom_r == "En attente" %}
                 ## <font color="#7f8c8d">⚪ Prêt à rechercher</font>
                 Remplis les champs puis lance l'IA.
-
               {% else %}
-
-                {# --- 2) Logique doublon (comme Cave) --- #}
                 {% set ns = namespace(found=false) %}
                 {% for id, info in inv.items() %}
                   {% if info is mapping %}
@@ -137,102 +129,215 @@ views:
                 {% else %}
                   ## <font color="#2ecc71">✅ Bouteille identifiée</font>
                 {% endif %}
-
               {% endif %}
 
-              {# --- 3) Affichage fiche (comme Cave : uniquement si résultat +
-              pas en cours + pas d’erreur) --- #} {% if nom_r != "En attente"
+              {% if nom_r != "En attente"
                     and is_state('input_boolean.bar_ia_en_cours','off')
                     and is_state('input_boolean.bar_ia_erreur','off') %}
 
               {% if est_maison %}🏠 **Maison**{% else %}🏭 **Industriel**{%
               endif %}
 
-              **Détails :** **🥃 Nom :** {{ nom_r }} **🧾 Type :** {{ type_r }}
-              **📅 Année :** {{ annee_r }} **🌡️ ABV :** {{ abv_r }} % **🧴
-              Volume :** {{ vol_r }} mL
+              **Détails :**   **🥃 Nom :** {{ nom_r }}   **🧾 Type :** {{ type_r
+              }}   **📅 Année :** {{ annee_r }}   **🌡️ ABV :** {{ abv_r }} %  
+              **🧴 Volume :** {{ vol_r }} mL  
 
               **👃 Profil :** {{ profil_r }}
 
               💰 **Prix estimé :** {{ prix_r }} € {% endif %}
-          - type: vertical-stack
+          - type: entities
+            title: ⚙️ Gestion Bar
+            show_header_toggle: false
+            card_mod:
+              style: |
+                #states {
+                  padding-top: 0 !important;
+                }
+            entities:
+              - entity: input_select.bar_selection_rangement
+                name: Spiritueux à ranger
+                card_mod:
+                  style: |
+                    hui-generic-entity-row {
+                      --paper-item-min-height: 64px;
+                    }
+                    .info {
+                      flex: 0 0 115px !important;
+                      min-width: 115px !important;
+                      max-width: 115px !important;
+                    }
+                    .info .name {
+                      white-space: normal !important;
+                      line-height: 1.2 !important;
+                    }
+                    .state {
+                      flex: 1 1 auto !important;
+                      min-width: 0 !important;
+                      max-width: 100% !important;
+                    }
+                    ha-select {
+                      width: 100% !important;
+                      min-width: 0 !important;
+                    }
+                    ha-select::part(text-field) {
+                      width: 100% !important;
+                      min-width: 0 !important;
+                    }
+              - entity: input_select.bar_selection_case_rangement
+                name: Case cible
+                card_mod:
+                  style: |
+                    .info {
+                      flex: 0 0 115px !important;
+                      min-width: 115px !important;
+                      max-width: 115px !important;
+                    }
+                    .state {
+                      flex: 1 1 auto !important;
+                      min-width: 0 !important;
+                      max-width: 100% !important;
+                    }
+                    ha-select {
+                      width: 100% !important;
+                      min-width: 0 !important;
+                    }
+                    ha-select::part(text-field) {
+                      width: 100% !important;
+                      min-width: 0 !important;
+                    }
+              - type: button
+                name: Ranger dans la case
+                icon: mdi:plus-box
+                tap_action:
+                  action: call-service
+                  service: script.bar_valider_rangement
+              - type: button
+                name: Vider la case
+                icon: mdi:trash-can
+                tap_action:
+                  action: call-service
+                  service: script.bar_vider_case
+              - type: section
+                label: Modifier l'entrée sélectionnée
+              - entity: input_select.bar_selection_suppression
+                name: Choisir une bouteille
+                card_mod:
+                  style: |
+                    hui-generic-entity-row {
+                      --paper-item-min-height: 64px;
+                    }
+                    .info {
+                      flex: 0 0 115px !important;
+                      min-width: 115px !important;
+                      max-width: 115px !important;
+                    }
+                    .info .name {
+                      white-space: normal !important;
+                      line-height: 1.2 !important;
+                    }
+                    .state {
+                      flex: 1 1 auto !important;
+                      min-width: 0 !important;
+                      max-width: 100% !important;
+                    }
+                    ha-select {
+                      width: 100% !important;
+                      min-width: 0 !important;
+                    }
+                    ha-select::part(text-field) {
+                      width: 100% !important;
+                      min-width: 0 !important;
+                    }
+          - type: horizontal-stack
             cards:
-              - type: conditional
-                conditions:
-                  - condition: state
-                    entity: input_select.bar_rendu_mode
-                    state: Rangement Manuel
-                card:
-                  type: entities
-                  title: 📥 Gestion Manuelle (Spiritueux)
-                  show_header_toggle: false
-                  entities:
-                    - entity: input_select.bar_selection_rangement
-                    - entity: input_select.bar_selection_case_rangement
-                    - type: button
-                      name: Placer la bouteille
-                      icon: mdi:plus-box
-                      tap_action:
-                        action: call-service
-                        service: script.bar_valider_rangement
-                    - type: button
-                      name: Vider la case
-                      icon: mdi:trash-can
-                      tap_action:
-                        action: call-service
-                        service: script.bar_vider_case
-              - type: conditional
-                conditions:
-                  - condition: state
-                    entity: input_select.bar_rendu_mode
-                    state: Remplissage Automatique
-                card:
-                  type: horizontal-stack
-                  cards:
-                    - type: button
-                      name: Ranger Tout
-                      icon: mdi:auto-fix
-                      tap_action:
-                        action: call-service
-                        service: script.bar_execution_auto_complete
-                    - type: button
-                      name: Vider Tout
-                      icon: mdi:cached
-                      tap_action:
-                        confirmation:
-                          text: Vider tout le plan ?
-                        action: call-service
-                        service: script.bar_vidage_complet
-              - type: entities
-                title: ⚙️ Configuration & Dimensions (Bar)
-                show_header_toggle: false
-                state_color: true
-                entities:
-                  - entity: input_select.bar_rendu_mode
-                    name: Mode d'affichage
-                  - entity: input_number.bar_nb_etageres
-                  - entity: input_number.bar_nb_colonnes
-              - type: horizontal-stack
-                cards:
-                  - type: button
-                    name: Sync Liste Spiritueux
-                    icon: mdi:database-sync
-                    tap_action:
-                      action: call-service
-                      service: automation.trigger
-                      target:
-                        entity_id: automation.bar_sync_liste_spiritueux
-                  - type: button
-                    name: Forcer Visuel
-                    icon: mdi:refresh
-                    tap_action:
-                      action: call-service
-                      service: shell_command.bar_update_html
+              - type: button
+                name: Retrait bouteille
+                icon: mdi:minus-thick
+                tap_action:
+                  action: call-service
+                  service: input_button.press
+                  target:
+                    entity_id: input_button.bar_decrement_stock
+              - type: button
+                name: Ajout bouteille
+                icon: mdi:plus-thick
+                tap_action:
+                  action: call-service
+                  service: input_button.press
+                  target:
+                    entity_id: input_button.bar_increment_stock
+              - type: button
+                name: Supprimer
+                icon: mdi:delete-forever
+                tap_action:
+                  action: call-service
+                  service: input_button.press
+                  target:
+                    entity_id: input_button.bar_delete_selected
+          - type: entities
+            title: ⚙️ Configuration & Dimensions (Bar)
+            show_header_toggle: false
+            state_color: true
+            card_mod:
+              style: |
+                hui-generic-entity-row {
+                  --paper-item-min-height: 54px;
+                }
+                .info {
+                  flex: 0 0 120px !important;
+                  min-width: 120px !important;
+                  max-width: 120px !important;
+                }
+                .info .name {
+                  white-space: normal !important;
+                  line-height: 1.2 !important;
+                }
+                .state {
+                  flex: 1 1 auto !important;
+                  min-width: 0 !important;
+                  max-width: 100% !important;
+                  text-align: right !important;
+                }
+                ha-select,
+                ha-textfield,
+                ha-control-number-buttons,
+                state-badge {
+                  min-width: 0 !important;
+                }
+            entities:
+              - entity: input_select.bar_rendu_mode
+                name: Mode d'affichage
+              - entity: input_number.bar_nb_etageres
+                name: Étagères
+              - entity: input_number.bar_nb_colonnes
+                name: Colonnes
+          - type: horizontal-stack
+            cards:
+              - type: button
+                name: Sync Liste Spiritueux
+                icon: mdi:database-sync
+                tap_action:
+                  action: call-service
+                  service: automation.trigger
+                  target:
+                    entity_id: automation.bar_sync_liste_rangement
+              - type: button
+                name: Forcer Visuel
+                icon: mdi:refresh
+                tap_action:
+                  action: call-service
+                  service: shell_command.bar_update_html
       - type: vertical-stack
         cards:
-          - type: iframe
-            url: /local/bar_plan.html?v=2.5
-            aspect_ratio: 77.5%
+          - type: custom:config-template-card
+            entities:
+              - input_text.bar_plan_version
+            card:
+              type: iframe
+              url: >-
+                ${"/local/bar_plan.html?v=" +
+                states['input_text.bar_plan_version'].state}
+              aspect_ratio: 92%
           - type: horizontal-stack
             cards:
               - type: entities
@@ -261,21 +366,26 @@ views:
                 conditions:
                   - entity: input_boolean.bar_ia_en_cours
                     state: 'off'
+                  - entity: input_boolean.bar_ia_erreur
+                    state: 'on'
                 card:
                   type: markdown
                   content: >
-                    {% if is_state('input_boolean.bar_ia_erreur', 'on') %}
-
                     ## ❌ Impossible de sortir un conseil
 
                     **Détail :** {{ states('input_text.bar_derniere_erreur_ia')
                     }}
-
-                    {% else %}
-
-                    {# -----------------------------
-                       Récup + nettoyage + garde-fous
-                       ----------------------------- #}
+              - type: conditional
+                conditions:
+                  - entity: input_boolean.bar_ia_en_cours
+                    state: 'off'
+                  - entity: input_boolean.bar_ia_erreur
+                    state: 'off'
+                  - entity: sensor.ia_barman_accord
+                    state_not: Vide
+                card:
+                  type: markdown
+                  content: >
                     {% set raw = state_attr('sensor.ia_barman_accord',
                     'reponse') | default('', true) | string %}
 
@@ -288,6 +398,10 @@ views:
                       | replace("’","'")
                       | trim
                     %}
+
+                    {% if s == '' %} ## 🥃 Conseil du Barman
+
+                    _Aucun conseil disponible._ {% else %}
 
                     {% set is_json = (s[0:1] == '{') and (s[-1:] == '}') and
                     ('"cocktail"' in s) %}
@@ -308,17 +422,35 @@ views:
                     {% set d = s | from_json %}
 
                     {% set cocktail = d.cocktail | default('Cocktail', true) %}
-                    {% set style   = d.style   | default('', true) %} {% set
-                    base    = d.base    | default('', true) %} {% set raison  =
-                    d.raison  | default('', true) %} {% set verre   = d.verre  
-                    | default('', true) %} {% set garnish = d.garnish |
-                    default('', true) %} {% set niveau  = d.niveau  |
+                    {% set style    = d.style   | default('', true) %} {% set
+                    base     = d.base    | default('', true) %} {% set raison  
+                    = d.raison  | default('', true) %} {% set verre    =
+                    d.verre   | default('', true) %} {% set garnish  = d.garnish
+                    | default('', true) %} {% set niveau   = d.niveau  |
                     default('', true) %}
 
-                    {% set ings    = d.ingredients if d.ingredients is defined
-                    else [] %} {% set steps   = d.recette if d.recette is
-                    defined else [] %} {% set alts    = d.alternatives if
+                    {% set ings_raw = d.ingredients if d.ingredients is defined
+                    else [] %} {% set steps    = d.recette if d.recette is
+                    defined else [] %} {% set alts_raw = d.alternatives if
                     d.alternatives is defined else [] %}
+
+                    {# Nettoyage variantes #} {% set ns = namespace(alts=[]) %}
+                    {% if alts_raw is iterable and alts_raw is not string %}
+                      {% for a in alts_raw %}
+                        {% if a is mapping %}
+                          {% set aname = a.nom | default(a.name | default('')) | string | trim %}
+                          {% set adesc = a.description | default(a.desc | default('')) | string | trim %}
+                          {% if aname not in ['', 'Variante'] or adesc != '' %}
+                            {% set ns.alts = ns.alts + [a] %}
+                          {% endif %}
+                        {% else %}
+                          {% set aval = a | string | trim %}
+                          {% if aval not in ['', 'Variante', '-', 'Aucune'] %}
+                            {% set ns.alts = ns.alts + [a] %}
+                          {% endif %}
+                        {% endif %}
+                      {% endfor %}
+                    {% endif %} {% set alts = ns.alts %}
 
                     ## 🥃 {{ cocktail }}
 
@@ -334,13 +466,15 @@ views:
 
                     ### 🍋 Ingrédients
 
-                    {% if ings is iterable and (ings | length) > 0 %}
-                      {% for it in ings %}
+                    {% if ings_raw is iterable and (ings_raw | length) > 0 %}
+                      {% for it in ings_raw %}
                         {% if it is mapping %}
                           {% set iname = it.nom | default(it.ingredient | default('Ingrédient')) %}
-                          {% set iqty  = it.quantite | default(it.qty | default('')) %}
-                    - **{{ iname }}**{% if iqty|string|trim != '' %} — {{ iqty
-                    }}{% endif %}
+                          {% set iqty_raw = it.quantite | default(it.qty | default('')) | string | trim %}
+                          {% set iqty_num = iqty_raw | replace(',', '.') %}
+                          {% set is_simple_number = iqty_num != '' and (iqty_num | regex_match('^[0-9]+(\\.[0-9]+)?$')) %}
+                          {% set iqty = (iqty_raw ~ ' ml') if is_simple_number else iqty_raw %}
+                    - **{{ iname }}**{% if iqty != '' %} — {{ iqty }}{% endif %}
                         {% else %}
                     - {{ it }}
                         {% endif %}
@@ -360,9 +494,9 @@ views:
                     {% if verre %}**Verre :** {{ verre }}{% endif %} {% if
                     garnish %}
 
-                    **Garnish :** {{ garnish }}{% endif %} {% endif %}
+                    **Garnish :** {{ garnish }} {% endif %} {% endif %}
 
-                    {% if alts is iterable and (alts | length) > 0 %} ---
+                    {% if alts | length > 0 %} ---
 
                     ### 🔁 Variantes
 
