@@ -15,7 +15,7 @@ from string import Template
 # Home Assistant API
 # -----------------------------
 HA_URL_BASE = "http://localhost:8123/api/states/"
-HA_TOKEN = "Mon_token"
+HA_TOKEN = "MON_TOKEN"
 
 ENTITY_SHELVES = "input_number.bar_nb_etageres"
 ENTITY_COLS    = "input_number.bar_nb_colonnes"
